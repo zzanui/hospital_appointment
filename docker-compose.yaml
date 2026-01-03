@@ -1,0 +1,87 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: derm_db
+    restart: unless-stopped
+    env_file:
+      - .env.development
+    ports: 
+      - "5432:5432"
+    volumes:
+      - derm_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-derm} -d ${POSTGRES_DB:-derm_clinic_dev}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  patient_api:
+    build:
+      context: .
+      dockerfile: Dockerfile.patient
+    container_name: patient_api
+    restart: unless-stopped
+    env_file:
+      - .env.development
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8001:8001"
+    volumes:
+      - .:/app
+    command: >
+      uvicorn apps.patient_api.main:app
+      --host 0.0.0.0
+      --port 8001
+      --reload
+
+  admin_api:
+    build:
+      context: .
+      dockerfile: Dockerfile.admin
+    container_name: admin_api
+    restart: unless-stopped
+    env_file:
+      - .env.development
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8002:8002"
+    volumes:
+      - .:/app
+    command: >
+      uvicorn apps.admin_api.main:app
+      --host 0.0.0.0
+      --port 8002
+      --reload
+
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.gateway
+    container_name: gateway
+    restart: unless-stopped
+    env_file:
+      - .env.development
+    environment:
+      PATIENT_API_URL: http://patient_api:8001
+      ADMIN_API_URL: http://admin_api:8002
+    depends_on:
+      - patient_api
+      - admin_api
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    command: >
+      uvicorn apps.gateway.main:app
+      --host 0.0.0.0
+      --port 8000
+      --reload
+
+volumes:
+  derm_db_data:
