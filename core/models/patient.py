@@ -1,15 +1,14 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.types import Integer, String
 from core.db import Base
-
 """
-2-1. 의사 정보 (Doctor)
-필수 필드: 이름, 진료과
-설명: 병원에 근무하는 의사의 기본 정보
+2-4. 환자 정보 (Patient)
+필수 필드: 이름, 연락처
+설명: 예약을 진행하는 환자의 기본 정보
 """
-class Doctor(Base):
-    __tablename__ = "doctors"
+class Patient(Base):
+    __tablename__ = "patients"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
-    specialty: Mapped[str] = mapped_column(String(100),nullable=False)
+    phone_number: Mapped[str] = mapped_column(String(15), nullable=False, unique=True)
