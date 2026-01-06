@@ -25,16 +25,16 @@ def get_stats(
     date_from: date | None = Query(default=None),
     date_to: date | None = Query(default=None),
 ):
-    q = db.query(Appointment)
+    query = db.query(Appointment)
 
     if date_from is not None:
-        q = q.filter(Appointment.start_datetime >= datetime.combine(date_from, time.min))
+        query = query.filter(Appointment.start_datetime >= datetime.combine(date_from, time.min))
     if date_to is not None:
-        q = q.filter(Appointment.start_datetime <= datetime.combine(date_to, time.max))
+        query = query.filter(Appointment.start_datetime <= datetime.combine(date_to, time.max))
 
     # 1) 상태별 예약 건수
     status_rows = (
-        q.with_entities(Appointment.status, func.count(Appointment.id))
+        query.with_entities(Appointment.status, func.count(Appointment.id))
         .group_by(Appointment.status)
         .all()
     )
@@ -42,7 +42,7 @@ def get_stats(
 
     # 2) 일별 예약 현황
     daily_rows = (
-        q.with_entities(func.date(Appointment.start_datetime).label("d"), func.count(Appointment.id))
+        query.with_entities(func.date(Appointment.start_datetime).label("d"), func.count(Appointment.id))
         .group_by("d")
         .order_by("d")
         .all()
@@ -53,7 +53,7 @@ def get_stats(
     slots = db.query(HospitalSlot).order_by(HospitalSlot.start_time.asc()).all()
     time_slot_counts: list[TimeSlotCount] = []
     if slots:
-        appts = q.filter(Appointment.status != "canceled").all()
+        appts = query.filter(Appointment.status != "canceled").all()
         for s in slots:
             key = f"{s.start_time.strftime('%H:%M')}-{s.end_time.strftime('%H:%M')}"
             used = 0
@@ -67,8 +67,8 @@ def get_stats(
 
     # 4) 초진/재진 비율
     vt_rows = (
-        q.with_entities(Appointment.visit_type, func.count(Appointment.id))
-        .group_by(Appointment.visit_type)
+        query.with_entities(Appointment.status, func.count(Appointment.id))
+        .group_by(Appointment.status)
         .all()
     )
     vt_map = {vt: c for vt, c in vt_rows}

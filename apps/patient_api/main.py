@@ -26,9 +26,3 @@ app.include_router(auth_router, prefix="/api/v1/patient")
 app.include_router(appointments_router, prefix="/api/v1/patient")
 
 
-@app.get("/ping")
-def ping():
-    return {"service": "patient_api", "message": "pong"}
-
-
-

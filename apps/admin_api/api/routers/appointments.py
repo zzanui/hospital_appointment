@@ -33,26 +33,26 @@ def list_appointments(
     patient_id: int | None = Query(default=None),
     treatment_id: int | None = Query(default=None),
 ):
-    q = db.query(Appointment)
+    query = db.query(Appointment)
     # 필터링
     if doctor_id is not None:
-        q = q.filter(Appointment.doctor_id == doctor_id)
+        query = query.filter(Appointment.doctor_id == doctor_id)
     if patient_id is not None:
-        q = q.filter(Appointment.patient_id == patient_id)
+        query = query.filter(Appointment.patient_id == patient_id)
     if treatment_id is not None:
-        q = q.filter(Appointment.treatment_id == treatment_id)
+        query = query.filter(Appointment.treatment_id == treatment_id)
     if status is not None:
         if status not in _VALID_STATUS:
             raise HTTPException(400, "Invalid status filter")
-        q = q.filter(Appointment.status == status)
+        query = query.filter(Appointment.status == status)
 
     if date_from is not None:
-        q = q.filter(Appointment.start_datetime >= datetime.combine(date_from, time.min))
+        query = query.filter(Appointment.start_datetime >= datetime.combine(date_from, time.min))
     if date_to is not None:
         # inclusive 느낌을 주려면 time.max 사용
-        q = q.filter(Appointment.start_datetime <= datetime.combine(date_to, time.max))
+        query = query.filter(Appointment.start_datetime <= datetime.combine(date_to, time.max))
 
-    return q.order_by(Appointment.start_datetime.desc()).all()
+    return query.order_by(Appointment.start_datetime.desc()).all()
 
 """
 4-5. 예약 상태 수정

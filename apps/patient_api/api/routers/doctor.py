@@ -15,7 +15,7 @@ router = APIRouter(prefix="/doctors", tags=["doctors"])
 """
 @router.get("/", response_model=List[DoctorRead])
 def list_doctors(
-    specialty: Optional[str] = Query(None, description="진료과로 필터링"), 
+    department: Optional[str] = Query(None, description="진료과로 필터링"), 
     db: Session = Depends(get_db),
     ):
     
@@ -24,8 +24,8 @@ def list_doctors(
     GET /api/v1/patient/doctors?department=피부과
     """
   
-    if specialty:
-        query = db.query(Doctor).filter(Doctor.specialty == specialty)
+    if department:
+        query = db.query(Doctor).filter(Doctor.department == department)
     else:
         query = db.query(Doctor)
 

@@ -11,6 +11,7 @@ services:
       - "5432:5432"
     volumes:
       - derm_db_data:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-derm} -d ${POSTGRES_DB:-derm_clinic_dev}"]
       interval: 5s
@@ -28,8 +29,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    ports:
-      - "8001:8001"
+    # ports:
+    #   - "8001:8001"
     volumes:
       - .:/app
     command: >
@@ -49,8 +50,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    ports:
-      - "8002:8002"
+    # ports:
+    #   - "8002:8002"
     volumes:
       - .:/app
     command: >

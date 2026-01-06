@@ -88,7 +88,7 @@ def get_available_start_times(db: Session, doctor_id: int, treatment_id: int, ta
             continue
         
         #병원 capacity: 예약구간이 걸치는 모든 30분 HospitalSlot이 여유 있어야 함
-        if enforce_capacity and not _check_capacity(db, appts_all, slots, start_dt, end_dt):
+        if enforce_capacity and not _check_capacity(db, target_date, start_dt, end_dt, slots, appts_all):
             continue
 
         availale.append(start_dt.strftime("%H:%M"))

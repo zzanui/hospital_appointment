@@ -7,4 +7,4 @@ pydantic-settings
 httpx
 pytest
 pytest-asyncio
-uv
+python-dotenv

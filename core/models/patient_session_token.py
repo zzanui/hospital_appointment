@@ -10,7 +10,7 @@ class PatientSessionToken(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     patient_id: Mapped[int] = mapped_column(Integer, ForeignKey("patients.id"), nullable=False, index=True)
     #인증토큰
-    token: Mapped[str] = mapped_column(String(255), nullable=False, unique=True, index=True)
+    access_token: Mapped[str] = mapped_column(String(255), nullable=False, unique=True, index=True)
     #토큰활성화 여부
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     #만료시간

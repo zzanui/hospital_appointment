@@ -17,6 +17,8 @@ CRUD 엔드포인트로 구현
 기타 적절한 방법
 예시: 10:00~10:30 시간대에 최대 3명으로 설정/수정
 """
+
+
 def _validate_slot(payload: HospitalSlotCreate | HospitalSlotUpdate) -> None:
     # start < end
     if payload.start_time is not None and payload.end_time is not None:

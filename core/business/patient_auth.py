@@ -11,7 +11,7 @@ def issue_patient_token(
         patient_phone: str,
         patient_name: str | None = None
         ) -> PatientSessionToken:
-    query = db.query(Patient).filter(Patient.phone == patient_phone)
+    query = db.query(Patient).filter(Patient.phone_number == patient_phone)
     
     # 이름이 들어온 경우에만 추가 검증
     if patient_name is not None:
@@ -20,19 +20,27 @@ def issue_patient_token(
     patient = query.first()
     if not patient:
         # 여기까지도 "없으면 에러"로 처리 
-        raise ValueError("Patient not found (phone/name mismatch)")
+        raise ValueError("Patient not found (phone_number/name mismatch)")
+    
+     # 기존 활성 토큰 전부 비활성화 (단일 세션 정책)
+    db.query(PatientSessionToken)\
+      .filter(PatientSessionToken.patient_id == patient.id,
+              PatientSessionToken.is_active == True)\
+      .update({"is_active": False})
+    db.commit()
 
+    #새 토큰 발급
     token_str = generate_token(32)
     now = datetime.now(timezone.utc)
     expires_at = now + timedelta(days=TOKEN_TTL_DAYS)
 
-    token = PatientSessionToken(
+    access_token = PatientSessionToken(
         patient_id = patient.id,
-        token=token_str,
-        is_active=True,
+        access_token=token_str,
+        is_active = True,
         expires_at=expires_at.replace(tzinfo=None),
     )
-    db.add(token)
+    db.add(access_token)
     db.commit()
     return token_str
 

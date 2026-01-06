@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 """
 3-1. 의사 목록 조회
 기능: 병원의 전체 의사 목록을 조회합니다.
@@ -7,15 +7,14 @@ from pydantic import BaseModel
 class DoctorRead(BaseModel):
     id: int
     name: str
-    specialty: str
+    department: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class DoctorCreate(BaseModel):
     name: str
-    specialty: str
+    department: str
 
 class DoctorUpdate(BaseModel):
     name: str | None = None
-    specialty: str | None = None
+    department: str | None = None

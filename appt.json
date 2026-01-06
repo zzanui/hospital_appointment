@@ -1,0 +1,8 @@
+﻿{
+  "patient_name":"김철수",
+  "patient_phone":"010-3333-4444",
+  "doctor_id":1,
+  "treatment_id":1,
+  "start_datetime":"2026-01-07T09:00:00",
+  "memo":"수동 예약"
+}

@@ -105,15 +105,13 @@ def _check_doctor_conflict(db: Session, doctor_id: int, start_dt: datetime, end_
     )
     return conflict is None
 
-def _get_or_create_patient(db: Session, name: str, phone: str) -> Patient:
-    patient = db.query(Patient).filter(Patient.phone == phone).one_or_none()
-    if patient:
-        return patient
+def _get_patient(db: Session, name: str, phone_number: str | None) -> Patient | None:
+    #환자정보 가져오기
+    patient = db.query(Patient).filter(Patient.phone_number == phone_number)
+    if name is not None:
+        patient = patient.filter(Patient.name == name)
     
-    patient = Patient(name=name, phone=phone)
-    db.add(patient)
-    db.flush()  # id 확보
-    return patient
+    return patient.first()
 
 def _determine_first_visit(db: Session, patient_id: int) -> str:
     """
@@ -172,7 +170,9 @@ def create_appointment( #// 404에러 처리예정
         raise ValueError("Hospital capacity exceeded for the requested time.")
     
     #6. 환자 조회/생성
-    patient = _get_or_create_patient(db, patient_name, patient_phone)
+    patient = _get_patient(db, patient_name, patient_phone)
+    if not patient:
+        raise ValueError("Patient not found (phone_number/name mismatch)")
 
     #7. 초진/재진 판단
     is_first_visit = _determine_first_visit(db, patient.id)

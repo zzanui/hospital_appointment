@@ -1,21 +1,20 @@
 from datetime import time
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 class HospitalSlotCreate(BaseModel):
-    starttime: time = Field(..., description="시간대 시작 (30분 단위)")
-    endtime: time = Field(..., description="시간대 종료 (30분 단위)")
-    maxcapacity: int = Field(..., description="최대 인원수")
+    start_time: time = Field(..., description="시간대 시작 (30분 단위)")
+    end_time: time = Field(..., description="시간대 종료 (30분 단위)")
+    max_capacity: int = Field(..., description="최대 인원수")
 
 class HospitalSlotRead(BaseModel):
     id: int
-    starttime: time
-    endtime: time
-    maxcapacity: int
+    start_time: time
+    end_time: time
+    max_capacity: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class HospitalSlotUpdate(BaseModel):
-    starttime: time | None = None
-    endtime: time | None = None
-    maxcapacity: int | None = None
+    start_time: time | None = None
+    end_time: time | None = None
+    max_capacity: int | None = None

@@ -19,27 +19,26 @@ def get_current_patient_id(
             detail="Invalid authentication credentials",
         )
     token_str = creds.credentials
-    token = (
+    access_token = (
         db.query(PatientSessionToken)
-        .filter(PatientSessionToken.token == token_str)
-        .filter(PatientSessionToken.is_active == True) 
+        .filter(PatientSessionToken.access_token == token_str)
         .first()
     )
     #토큰유효성 검사
     #토큰있는지 확인
-    if not token:
+    if not access_token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired token",
+            detail="Invalid or expired access_token",
         )
     #토큰만료시간 확인
-    if token.expires_at < datetime.utcnow():
+    if access_token.expires_at < datetime.utcnow():
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token has expired",
+            detail="Access_token has expired",
         )
     
-    return token.patient_id
+    return access_token.patient_id
     
     
 

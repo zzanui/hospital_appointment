@@ -1,0 +1,22 @@
+﻿
+
+StatusCode        : 200
+StatusDescription : OK
+Content           : [{"id":2,"name":"ì´ìì¥","department":"ì±íì¸ê³¼"},{"id":1,"name":"ê¹ìì¥","department":"í¼ë¶ê³¼"}]
+RawContent        : HTTP/1.1 200 OK
+                    Date: Tue, 06 Jan 2026 15:11:43 GMT,Tue, 06 Jan 2026 15:11:44 GMT
+                    Server: uvicorn,uvicorn
+                    content-length: 110
+                    content-type: application/json
+                    
+                    [{"id":2,"name":"ì´ìì¥","departm...
+Forms             : {}
+Headers           : {[Date, Tue, 06 Jan 2026 15:11:43 GMT,Tue, 06 Jan 2026 15:11:44 GMT], [Server, uvicorn,uvicorn], [content-length, 110], [content-type, application/json]}
+Images            : {}
+InputFields       : {}
+Links             : {}
+ParsedHtml        : System.__ComObject
+RawContentLength  : 110
+
+
+
