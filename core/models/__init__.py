@@ -5,4 +5,17 @@ from .patient import Patient
 from .appointment import Appointment
 from .patient_session_token import PatientSessionToken
 
-__all__ = ["Doctor", "Treatment", "HospitalSlot", "Patient", "Appointment", "PatientSessionToken"]
+# async/event
+from .job import Job
+from .outbox_event import OutboxEvent
+
+__all__ = [
+    "Doctor",
+    "Treatment",
+    "HospitalSlot",
+    "Patient",
+    "Appointment",
+    "PatientSessionToken",
+    "Job",
+    "OutboxEvent",
+]

@@ -1,11 +1,15 @@
 from fastapi import FastAPI, Request, Response, status
-import httpx, os
+import httpx, os, uuid
 from fastapi.middleware.cors import CORSMiddleware
+
+from common.logging_utils import TRACE_ID, now_ms, setup_json_logger
 
 PATIENT_API_URL = os.getenv("PATIENT_API_URL", "http://patient_api:8001")
 ADMIN_API_URL = os.getenv("ADMIN_API_URL", "http://admin_api:8002")
 
-app = FastAPI(title="Gateway API", version="0.1.0", redirect_slashes=False)
+logger = setup_json_logger("gateway")
+
+app = FastAPI(title="Gateway API", version="0.2.0", redirect_slashes=False)
 
 app.add_middleware(
     CORSMiddleware,
@@ -20,6 +24,29 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.middleware("http")
+async def trace_middleware(request: Request, call_next):
+    trace_id = request.headers.get("X-Trace-Id") or str(uuid.uuid4())
+    token = TRACE_ID.set(trace_id)
+    start = now_ms()
+    try:
+        response: Response = await call_next(request)
+        response.headers["X-Trace-Id"] = trace_id
+        return response
+    finally:
+        duration = now_ms() - start
+        logger.info(
+            "http request finished",
+            extra={
+                "event": "http.request.finished",
+                "http_method": request.method,
+                "http_path": request.url.path,
+                "duration_ms": duration,
+            },
+        )
+        TRACE_ID.reset(token)
+
+async def _proxy(request: Request, upstream_base: str, upstream_path: str) -> Response:
 async def _proxy(request: Request, upstream_base: str, upstream_path: str) -> Response:
     method = request.method
     url = f"{upstream_base}{upstream_path}"
